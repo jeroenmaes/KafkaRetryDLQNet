@@ -1,19 +1,23 @@
 using Confluent.Kafka;
+using KafkaRetryDLQNet.Data;
+using KafkaRetryDLQNet.Dto;
+using KafkaRetryDLQNet.Kafka;
+using KafkaRetryDLQNet.Producer;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Consumers;
 
-public class MainConsumer : BackgroundService
+public class Retry1Consumer : BackgroundService
 {
     private readonly KafkaSettings _settings;
-    private readonly ILogger<MainConsumer> _logger;
+    private readonly ILogger<Retry1Consumer> _logger;
     private readonly EmployeeRepository _repository;
     private readonly MessageRouter _router;
 
-    public MainConsumer(
+    public Retry1Consumer(
         IOptions<KafkaSettings> settings,
-        ILogger<MainConsumer> logger,
+        ILogger<Retry1Consumer> logger,
         EmployeeRepository repository,
         MessageRouter router)
     {
@@ -31,15 +35,15 @@ public class MainConsumer : BackgroundService
         var config = new ConsumerConfig
         {
             BootstrapServers = _settings.BootstrapServers,
-            GroupId = $"{_settings.GroupId}-main",
+            GroupId = $"{_settings.GroupId}-retry1",
             AutoOffsetReset = AutoOffsetReset.Earliest,
             EnableAutoCommit = false
         };
 
         using var consumer = new ConsumerBuilder<string, string>(config).Build();
-        consumer.Subscribe(_settings.Topics.Main);
+        consumer.Subscribe(_settings.Topics.Retry1);
 
-        _logger.LogInformation("MainConsumer started, subscribed to {Topic}", _settings.Topics.Main);
+        _logger.LogInformation("Retry1Consumer started, subscribed to {Topic}", _settings.Topics.Retry1);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -47,7 +51,24 @@ public class MainConsumer : BackgroundService
             {
                 var result = consumer.Consume(stoppingToken);
                 
-                _logger.LogInformation("MainConsumer received message: Key={Key}", result.Message.Key);
+                var notBefore = result.Message.Headers.GetLongHeader(HeaderHelper.NotBeforeEpochMs);
+                var retryStage = result.Message.Headers.GetIntHeader(HeaderHelper.RetryStage);
+                var originTopic = result.Message.Headers.GetStringHeader(HeaderHelper.OriginTopic);
+
+                _logger.LogInformation("Retry1Consumer received message: Key={Key}, RetryStage={RetryStage}, Origin={Origin}", 
+                    result.Message.Key, retryStage, originTopic);
+
+                // Wait if message arrived too early
+                if (notBefore.HasValue)
+                {
+                    var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    if (now < notBefore.Value)
+                    {
+                        var waitMs = (int)(notBefore.Value - now);
+                        _logger.LogInformation("Message arrived early. Waiting {WaitMs}ms before processing", waitMs);
+                        await Task.Delay(waitMs, stoppingToken);
+                    }
+                }
 
                 var employeeMessage = JsonSerializer.Deserialize<EmployeeMessage>(result.Message.Value);
                 if (employeeMessage == null)
@@ -61,21 +82,21 @@ public class MainConsumer : BackgroundService
                 {
                     await _repository.UpdateEmployeeAsync(employeeMessage);
                     consumer.Commit(result);
-                    _logger.LogInformation("MainConsumer successfully processed message for EmployeeID {EmployeeID}", 
+                    _logger.LogInformation("Retry1Consumer successfully processed message for EmployeeID {EmployeeID}", 
                         employeeMessage.EmployeeID);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "MainConsumer failed to process message for EmployeeID {EmployeeID}", 
+                    _logger.LogError(ex, "Retry1Consumer failed to process message for EmployeeID {EmployeeID}", 
                         employeeMessage.EmployeeID);
                     
-                    await _router.RouteToRetry1Async(result, ex.Message);
+                    await _router.RouteToRetry2Async(result, ex.Message);
                     consumer.Commit(result);
                 }
             }
             catch (ConsumeException ex)
             {
-                _logger.LogError(ex, "Consume error in MainConsumer");
+                _logger.LogError(ex, "Consume error in Retry1Consumer");
             }
             catch (OperationCanceledException)
             {
@@ -84,6 +105,6 @@ public class MainConsumer : BackgroundService
         }
 
         consumer.Close();
-        _logger.LogInformation("MainConsumer stopped");
+        _logger.LogInformation("Retry1Consumer stopped");
     }
 }

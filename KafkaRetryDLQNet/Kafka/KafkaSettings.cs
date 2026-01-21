@@ -1,4 +1,4 @@
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Kafka;
 
 public class KafkaSettings
 {

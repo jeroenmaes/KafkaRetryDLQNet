@@ -1,4 +1,4 @@
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Dto;
 
 public class EmployeeMessage
 {

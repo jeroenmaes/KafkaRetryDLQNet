@@ -1,7 +1,7 @@
 using Confluent.Kafka;
 using System.Text;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Kafka;
 
 public static class HeaderHelper
 {
@@ -33,7 +33,7 @@ public static class HeaderHelper
         if (headers == null)
             return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Key == null)
+        if (header?.Key == null)
             return null;
         var value = header.GetValueBytes();
         if (value == null || value.Length != 4)
@@ -46,7 +46,7 @@ public static class HeaderHelper
         if (headers == null)
             return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Key == null)
+        if (header?.Key == null)
             return null;
         var value = header.GetValueBytes();
         if (value == null || value.Length != 8)
@@ -59,7 +59,7 @@ public static class HeaderHelper
         if (headers == null)
             return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Key == null)
+        if (header?.Key == null)
             return null;
         var value = header.GetValueBytes();
         if (value == null)

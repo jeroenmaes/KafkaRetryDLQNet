@@ -2,7 +2,7 @@ using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Microsoft.Extensions.Options;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Kafka;
 
 public class TopicCreator : IHostedService
 {
@@ -35,7 +35,7 @@ public class TopicCreator : IHostedService
 
         try
         {
-            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
+            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(60));
             var existingTopics = metadata.Topics.Select(t => t.Topic).ToHashSet();
 
             var topicsToCreate = topics

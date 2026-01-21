@@ -1,8 +1,10 @@
 using Confluent.Kafka;
+using KafkaRetryDLQNet.Dto;
+using KafkaRetryDLQNet.Kafka;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Producer;
 
 public class MessageProducer : BackgroundService
 {

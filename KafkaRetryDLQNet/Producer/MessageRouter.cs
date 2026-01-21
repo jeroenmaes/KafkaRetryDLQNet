@@ -1,8 +1,9 @@
 using Confluent.Kafka;
+using KafkaRetryDLQNet.Kafka;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Producer;
 
 public class MessageRouter : IDisposable
 {

@@ -1,7 +1,8 @@
+using KafkaRetryDLQNet.Dto;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Data;
 
 public class EmployeeRepository
 {

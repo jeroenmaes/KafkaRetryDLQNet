@@ -1,8 +1,12 @@
 using Confluent.Kafka;
+using KafkaRetryDLQNet.Data;
+using KafkaRetryDLQNet.Dto;
+using KafkaRetryDLQNet.Kafka;
+using KafkaRetryDLQNet.Producer;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace KafkaRetryDLQNet;
+namespace KafkaRetryDLQNet.Consumers;
 
 public class Retry2Consumer : BackgroundService
 {

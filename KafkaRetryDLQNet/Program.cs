@@ -1,4 +1,7 @@
-using KafkaRetryDLQNet;
+using KafkaRetryDLQNet.Consumers;
+using KafkaRetryDLQNet.Data;
+using KafkaRetryDLQNet.Kafka;
+using KafkaRetryDLQNet.Producer;
 
 var builder = Host.CreateApplicationBuilder(args);
 
