@@ -152,20 +152,28 @@ KafkaRetryDLQNet/
 ├── init-db.sql                 # Northwind database initialization
 ├── KafkaRetryDLQNet.sln        # Solution file
 └── KafkaRetryDLQNet/           # Main project
-    ├── KafkaRetryDLQNet.csproj
-    ├── appsettings.json
+    ├── Consumers/              # Message consumers
+    │   ├── MainConsumer.cs     # Main topic consumer
+    │   ├── Retry1Consumer.cs   # Retry-1 consumer
+    │   ├── Retry2Consumer.cs   # Retry-2 consumer
+    │   └── Retry3Consumer.cs   # Retry-3 consumer
+    ├── Data/                   # Data access layer
+    │   └── EmployeeRepository.cs   # SQL repository
+    ├── Dto/                    # Data transfer objects
+    │   └── EmployeeMessage.cs  # Message model
+    ├── Kafka/                  # Kafka utilities
+    │   ├── HeaderHelper.cs     # Kafka header utilities
+    │   ├── KafkaSettings.cs    # Configuration models
+    │   └── TopicCreator.cs     # Topic initialization
+    ├── Producer/               # Message producers
+    │   ├── MessageProducer.cs  # Message producer
+    │   └── MessageRouter.cs    # Retry routing logic
+    ├── Properties/             # Project properties
+    │   └── launchSettings.json # Launch configuration
+    ├── KafkaRetryDLQNet.csproj # Project file
     ├── Program.cs              # Application entry point
-    ├── KafkaSettings.cs        # Configuration models
-    ├── EmployeeMessage.cs      # Message model
-    ├── HeaderHelper.cs         # Kafka header utilities
-    ├── TopicCreator.cs         # Topic initialization
-    ├── MessageProducer.cs      # Message producer
-    ├── MessageRouter.cs        # Retry routing logic
-    ├── EmployeeRepository.cs   # SQL repository
-    ├── MainConsumer.cs         # Main topic consumer
-    ├── Retry1Consumer.cs       # Retry-1 consumer
-    ├── Retry2Consumer.cs       # Retry-2 consumer
-    └── Retry3Consumer.cs       # Retry-3 consumer
+    ├── appsettings.json        # Application settings
+    └── appsettings.Development.json  # Development settings
 ```
 
 ## Cleanup
