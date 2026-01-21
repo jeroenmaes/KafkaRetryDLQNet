@@ -2,6 +2,11 @@
 
 A minimal .NET 10 demonstration of Kafka retry topics with three retry stages and a Dead Letter Queue (DLQ), using pure Kafka headers and a wait-before-consume strategy.
 
+The concept is based on the Uber "Building Reliable Reprocessing and Dead Letter Queues with Apache Kafka" blog: https://www.uber.com/en-BE/blog/reliable-reprocessing/
+<img width="1224" height="802" alt="image" src="https://github.com/user-attachments/assets/9f17da23-f9e0-4e7d-8a1f-ac5144490f14" />
+
+More info on this can be found on the excellent blogpost of Kai Waehner: https://www.kai-waehner.de/blog/2022/05/30/error-handling-via-dead-letter-queue-in-apache-kafka/
+
 ## Overview
 
 This project demonstrates a robust message processing pattern with automatic retry logic and error handling:
