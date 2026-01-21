@@ -31,24 +31,33 @@ public static class HeaderHelper
     public static int? GetIntHeader(this Headers headers, string key)
     {
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Value == null || header.Value.Length != 4)
+        if (header.Key == null)
             return null;
-        return BitConverter.ToInt32(header.Value);
+        var value = header.GetValueBytes();
+        if (value == null || value.Length != 4)
+            return null;
+        return BitConverter.ToInt32(value!);
     }
 
     public static long? GetLongHeader(this Headers headers, string key)
     {
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Value == null || header.Value.Length != 8)
+        if (header.Key == null)
             return null;
-        return BitConverter.ToInt64(header.Value);
+        var value = header.GetValueBytes();
+        if (value == null || value.Length != 8)
+            return null;
+        return BitConverter.ToInt64(value!);
     }
 
     public static string? GetStringHeader(this Headers headers, string key)
     {
         var header = headers.FirstOrDefault(h => h.Key == key);
-        if (header.Value == null)
+        if (header.Key == null)
             return null;
-        return Encoding.UTF8.GetString(header.Value);
+        var value = header.GetValueBytes();
+        if (value == null)
+            return null;
+        return Encoding.UTF8.GetString(value!);
     }
 }
