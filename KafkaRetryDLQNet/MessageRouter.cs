@@ -4,12 +4,13 @@ using System.Text.Json;
 
 namespace KafkaRetryDLQNet;
 
-public class MessageRouter
+public class MessageRouter : IDisposable
 {
     private readonly KafkaSettings _settings;
     private readonly ILogger<MessageRouter> _logger;
     private readonly IProducer<string, string> _producer;
     private readonly Random _random = new();
+    private bool _disposed;
 
     public MessageRouter(IOptions<KafkaSettings> settings, ILogger<MessageRouter> logger)
     {
@@ -115,5 +116,15 @@ public class MessageRouter
         };
 
         await _producer.ProduceAsync(topic, message);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _producer?.Flush(TimeSpan.FromSeconds(10));
+        _producer?.Dispose();
+        _disposed = true;
     }
 }

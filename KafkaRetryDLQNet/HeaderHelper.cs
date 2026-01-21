@@ -30,6 +30,8 @@ public static class HeaderHelper
 
     public static int? GetIntHeader(this Headers headers, string key)
     {
+        if (headers == null)
+            return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
         if (header.Key == null)
             return null;
@@ -41,6 +43,8 @@ public static class HeaderHelper
 
     public static long? GetLongHeader(this Headers headers, string key)
     {
+        if (headers == null)
+            return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
         if (header.Key == null)
             return null;

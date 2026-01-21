@@ -46,7 +46,6 @@ services:
       SA_PASSWORD: 'YourStrong@Passw0rd'
       MSSQL_PID: 'Developer'
     volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - sqlserver-data:/var/opt/mssql
     networks:
       - kafka-net
