@@ -52,6 +52,8 @@ public static class HeaderHelper
 
     public static string? GetStringHeader(this Headers headers, string key)
     {
+        if (headers == null)
+            return null;
         var header = headers.FirstOrDefault(h => h.Key == key);
         if (header.Key == null)
             return null;
